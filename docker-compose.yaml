@@ -1,0 +1,19 @@
+version: "3.5"
+services:
+  api:
+    container_name: raidsims_api
+    restart: always
+    build:
+      context: .
+    network_mode: host
+    env_file: ./api/.env
+    ports:
+      - 3000:3000
+  bot:
+    container_name: raidsims_bot
+    restart: always
+    network_mode: host
+    build:
+      context: discord-bot
+    depends_on:
+      - api

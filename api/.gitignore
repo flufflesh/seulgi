@@ -1,0 +1,15 @@
+dist/
+node_modules/
+coverage/
+.cache/
+.env
+junit.xml
+yarn-error.log
+tsconfig.tsbuildinfo
+api_key.txt
+apikey.txt
+
+# reports lol
+/reports
+pandalita.html
+pandalita.json
