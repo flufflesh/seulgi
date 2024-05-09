@@ -106,8 +106,8 @@ export class SimcRunner {
   async uploadFiles(reportId: string) {
     await new Promise((resolve, reject) => {
       try {
-        fs.readFile(`reports/${reportId}.json`, (err, data) => {
-          this.wasabiService.uploadObject(data, `${reportId}.json`)
+        fs.readFile(`reports/${reportId}.json`, async (err, data) => {
+          await this.wasabiService.uploadObject(data, `${reportId}.json`)
           resolve("done")
         })
       } catch (err) {

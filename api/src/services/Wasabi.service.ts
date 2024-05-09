@@ -1,50 +1,37 @@
-import AWS from "aws-sdk"
 import { Logger } from "winston"
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3"
 
 class WasabiService {
   private s3
   constructor(accessKey: string, secretKey: string, private logger: Logger) {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: "wasabi" })
-    AWS.config.credentials = credentials
-    AWS.config.credentials.accessKeyId = accessKey
-    AWS.config.credentials.secretAccessKey = secretKey
-    const endpoint = new AWS.Endpoint("s3.wasabisys.com")
-    this.s3 = new AWS.S3({ endpoint })
+    this.s3 = new S3Client({
+      endpoint: "https://s3.eu-central-003.backblazeb2.com",
+      region: "eu-central-003",
+      credentials: {
+        accessKeyId: accessKey,
+        secretAccessKey: secretKey,
+      },
+    })
   }
 
-  uploadObject(object: any, fileName: string) {
-    this.s3.putObject(
-      {
-        Bucket: "lily-simming-tool",
-        Key: fileName,
-        Body: object,
-      },
-      err => {
-        if (err) {
-          this.logger.error(err)
-        } else {
-          return
-        }
-      }
-    )
+  async uploadObject(object: any, fileName: string) {
+    const command = new PutObjectCommand({
+      Bucket: "",
+      Key: fileName,
+      Body: object,
+    })
+    await this.s3.send(command)
   }
   async readObject(fileName: string) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        this.s3.getObject(
-          {
-            Bucket: "lily-simming-tool",
-            Key: fileName,
-          },
-          (err, readData) => {
-            if (err) {
-              return reject(err)
-            }
-            resolve(readData.Body?.toString("utf-8"))
-          }
-        )
-      }, 3000)
-    })
+    const data = await this.s3.send(
+      new GetObjectCommand({ Bucket: "", Key: fileName })
+    )
+
+    return data.Body?.transformToString()
   }
 }
 
